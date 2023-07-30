@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import LazyImage from "./LazyImage";
+import {Link} from "react-router-dom";
 
 const PokeCard = ({ url, name }) => {
 
@@ -27,7 +28,7 @@ const PokeCard = ({ url, name }) => {
     function formatPokemonData(params) {
         const { id, types, name } = params;
 
-        console.log(params)
+        // console.log(params)
         const pokeData = {
             id,
             name,
@@ -41,12 +42,12 @@ const PokeCard = ({ url, name }) => {
     const text = `text-${pokemon?.type}`;
     const img = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon?.id}.png`;
 
-    console.log(pokemon)
+    // console.log(pokemon)
 
     return (
         pokemon && (
-            <a
-                href={`/pokemon/${name}`}
+            <Link
+                to={`/pokemon/${name}`}
                 className={`box-border rounded-lg ${border} w-[8.5rem] h-[8.5rem] z-0 bg-slate-800 justify-between items-center`}
             >
                 <div
@@ -68,7 +69,7 @@ const PokeCard = ({ url, name }) => {
                 >
                     {pokemon?.name}
                 </div>
-            </a>
+            </Link>
         )
 
     )
