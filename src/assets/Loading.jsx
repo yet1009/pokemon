@@ -1,6 +1,6 @@
-import { ClassNameProps } from "../types/ClassNameProps";
+// import { ClassNameProps } from "../types/ClassNameProps";
 
-export const Loading = ({ className: CN }: ClassNameProps) => (
+export const Loading = ({ className: CN }) => (
    <svg
       version="1.1"
       id="loader-1"

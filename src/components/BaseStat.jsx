@@ -5,7 +5,7 @@ const BaseStat = ({ valueStat, nameStat, type }) => {
     const bg = `bg-${type}`
     const ref = useRef(null)
 
-    console.dir(ref.current)
+    // console.dir(ref.current)
 
     useEffect(() => {
 
