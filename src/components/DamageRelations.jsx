@@ -1,9 +1,10 @@
 /*eslint-disable*/
 import {useEffect, useState} from "react";
+import Type from "./Type.jsx";
 
 const DamageRelations = ({ damages }) => {
 
-    const [damagePokemonForm, setDamagePokemonForm] = useState()
+    const [damagePokemonForm, setDamagePokemonForm] = useState({})
 
     useEffect(() => {
         const arrDamage = damages.map(damage => seperateObjectBetweenToAndFrom(damage))
@@ -118,7 +119,53 @@ const DamageRelations = ({ damages }) => {
 
 
     return (
-        <div></div>
+        <div className='flex gap-2 flex-col'>
+            {
+                damagePokemonForm ? (
+                    <>
+                        {
+                            Object.entries(damagePokemonForm).map(([keyName, value]) => {
+                                const key = keyName;
+                                const valuesOfKeyName = {
+                                    double_damage : 'Weak',
+                                    half_damage: 'Registant',
+                                    no_damage: 'Immune',
+                                }
+
+                                return (
+                                    <div key={key}>
+                                        <h3
+                                            className='capitalize font-medium text-sm md:text-base text-slate-500 text-center'
+                                        >{valuesOfKeyName[key]}</h3>
+                                        <div className='flex flex-wrap gap-1 justify-center'>
+                                            {
+                                                value?.length > 0 ? (
+                                                    value?.map(({name, url, damageValue}) => {
+                                                        return (
+                                                            <Type
+                                                                type={name}
+                                                                key={url}
+                                                                damageValue={damageValue}
+                                                            />
+                                                        )
+                                                    })
+                                                ): (
+                                                    <Type type={'none'} key={'none'} />
+                                                )
+                                            }
+                                        </div>
+                                    </div>
+
+                                )
+                            })
+                        }
+
+                    </>
+                ): (
+                    <div></div>
+                )
+            }
+        </div>
     )
 }
 

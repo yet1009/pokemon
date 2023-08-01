@@ -10,11 +10,14 @@ import Type from "../../components/Type";
 import BaseStat from "../../components/BaseStat";
 import {GreaterThan} from "../../assets/GreaterThan";
 import DamageRelations from "../../components/DamageRelations";
+import DamageModal from "../../components/DamageModal.jsx";
 
 const DetailPage = () => {
 
     const [pokemon, setPokemon] = useState()
     const [isLoading, setIsLoading] = useState(true);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
 
 
@@ -181,6 +184,7 @@ const DetailPage = () => {
                             loading='lazy'
                             alt={pokemon.name}
                             className={`object-contain h-full`}
+                            onClick={() => setIsModalOpen(true)}
                         />
                     </div>
                 </section>
@@ -258,6 +262,10 @@ const DetailPage = () => {
 
                 </section>
             </div>
+
+            {
+                isModalOpen && <DamageModal setIsModalOpen={setIsModalOpen} damages={pokemon.DamageRelations} />
+            }
         </article>
     )
 
