@@ -9,13 +9,13 @@ import {Vector} from "../../assets/Vector";
 import Type from "../../components/Type";
 import BaseStat from "../../components/BaseStat";
 import {GreaterThan} from "../../assets/GreaterThan";
-import DamageRelations from "../../components/DamageRelations";
+// import DamageRelations from "../../components/DamageRelations";
 import DamageModal from "../../components/DamageModal.jsx";
 
 const DetailPage = () => {
 
     const [pokemon, setPokemon] = useState()
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -26,18 +26,22 @@ const DetailPage = () => {
     const baseUrl = 'https://pokeapi.co/api/v2/pokemon/';
 
     useEffect(() => {
-        fetchPokemonData()
-    }, [])
+        setIsLoading(true)
+        fetchPokemonData(pokemonId)
 
-    async function fetchPokemonData() {
-        const url = `${baseUrl}${pokemonId}`;
+    }, [pokemonId])
+
+    async function fetchPokemonData(id) {
+        const url = `${baseUrl}${id}`;
 
         try {
             const { data:pokemonData } = await axios.get(url)
             // console.log(pokemonData)
 
             if(pokemonData) {
-                const {name, id, types, weight, height, stats, abilities } = pokemonData
+                const {name, id, types, weight, height, stats, abilities, sprites } = pokemonData
+
+
                 const nextAndPreviousPokemon = await getNextAndPreviousPokemon(id)
 
                 // console.log(nextAndPreviousPokemon)
@@ -58,7 +62,9 @@ const DetailPage = () => {
                     abilities: formatPokemonAbilities(abilities),
                     stats: formatPokemonStats(stats),
                     DamageRelations,
-                    types: types.map(type => type.type.name)
+                    types: types.map(type => type.type.name),
+                    sprites: formatPokemonSprites(sprites),
+                    description: await getPokemonDescription(id),
                 }
 
                 console.log(formattedPokemonData)
@@ -70,8 +76,42 @@ const DetailPage = () => {
 
         } catch (err) {
             console.error(err)
+            setIsLoading(false)
         }
     }
+
+    const filterAndFormatDescription = (flavorText) => {
+        const koreanDescriptions = flavorText?.filter(text => text.language.name === 'ko').map(text => text.flavor_text.replace(/\r|\n|\f/g, ' '))
+
+        // console.log(koreanDescriptions)
+        return koreanDescriptions
+    }
+
+    const getPokemonDescription = async (id) => {
+        const url = `https://pokeapi.co/api/v2/pokemon-species/${id}`
+        const { data:pokeSpecies } = await axios.get(url)
+        // console.log(pokeSpecies)
+        const descriptions = filterAndFormatDescription(pokeSpecies.flavor_text_entries)
+
+        return descriptions[Math.floor(Math.random() * descriptions.length)]
+
+    }
+
+
+    const formatPokemonSprites = (sprites) => {
+        const newSprites = {...sprites}
+
+        Object.keys(newSprites).forEach(key => {
+            if(typeof newSprites[key] !== 'string') {
+                delete newSprites[key]
+            }
+        })
+
+        console.log(newSprites)
+
+        return Object.values(newSprites)
+    }
+
 
 
     const formatPokemonStats = ([statHP, statATK, statDEP, statSATK, statSDEP, statSPD]) => ([
@@ -90,13 +130,13 @@ const DetailPage = () => {
         const urlPokemon = `${baseUrl}?limit=1&offset=${id - 1}`;
         const { data:pokemonData } = await axios.get(urlPokemon);
 
-        const nextReponse = pokemonData.next && (await axios.get(pokemonData.next))
+        const nextResponse= pokemonData.next && (await axios.get(pokemonData.next))
         const previousResponse = pokemonData.previous && (await axios.get(pokemonData.previous))
 
         console.log('previous', previousResponse)
 
         return {
-            next: nextReponse?.data?.results?.[0],
+            next: nextResponse?.data?.results?.[0]?.name,
             previous: previousResponse?.data?.results?.[0]?.name
         }
     }
@@ -183,7 +223,7 @@ const DetailPage = () => {
                             height="auto"
                             loading='lazy'
                             alt={pokemon.name}
-                            className={`object-contain h-full`}
+                            className={`object-contain h-full cursor-pointer`}
                             onClick={() => setIsModalOpen(true)}
                         />
                     </div>
@@ -249,16 +289,36 @@ const DetailPage = () => {
                         </table>
                     </div>
 
-                    {
-                        pokemon.DamageRelations && (
-                            <div className={`w-10/12`}>
-                                <h2 className={`text-base text-center font-semibold ${text}`}>
-                                    <DamageRelations damages={pokemon.DamageRelations} />
-                                </h2>
-                                데미지
-                            </div>
-                        )
-                    }
+                    <h2 className={`text-base font-semibold ${text}`}>
+                        설명
+                    </h2>
+                    <p className={'text-md leading-4 font-sans text-zinc-200 max-w-[30rem] text-center'}>
+                        {pokemon.description}
+                    </p>
+
+
+                    <div className='flex my-8 flex-wrap justify-center'>
+                        {
+                            pokemon.sprites.map((url, index) => (
+                                <img
+                                    key={index}
+                                    src={url}
+                                    alt={"sprites"}
+                                />
+                            ))
+                        }
+                    </div>
+
+                    {/*{*/}
+                    {/*    pokemon.DamageRelations && (*/}
+                    {/*        <div className={`w-10/12`}>*/}
+                    {/*            <h2 className={`text-base text-center font-semibold ${text}`}>*/}
+                    {/*                <DamageRelations damages={pokemon.DamageRelations} />*/}
+                    {/*            </h2>*/}
+                    {/*            데미지*/}
+                    {/*        </div>*/}
+                    {/*    )*/}
+                    {/*}*/}
 
                 </section>
             </div>
