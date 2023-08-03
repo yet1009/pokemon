@@ -1,15 +1,42 @@
 import styled from "styled-components";
 import {useEffect, useState} from "react";
-import {useLocation} from "react-router-dom";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import {useLocation, useNavigate} from "react-router-dom";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'firebase/auth';
+import app from "../firebase.js"
 
 const NavBar = () => {
 
-    // const auth = getAuth()
+    const auth = getAuth(app)
+    const provider = new GoogleAuthProvider();
 
     const [show, setShow] = useState(false)
     const { pathname } = useLocation()
+    const navigate = useNavigate()
 
+    useEffect(() => {
+
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            console.log(user)
+            if(!user) {
+                navigate("/login")
+            } else if (user && pathname === "/login") {
+                navigate("/")
+            }
+        })
+
+        return () => {
+            unsubscribe()
+        }
+    }, [])
+
+    const handleAuth = () => {
+        signInWithPopup(auth, provider).then(res =>  {
+            console.log(res)
+        }).catch(err => {
+            console.err(err)
+        })
+
+    }
 
     const scrollHandler = () => {
         if(window.scrollY > 50) {
@@ -38,7 +65,7 @@ const NavBar = () => {
             </Logo>
 
             {
-                pathname === '/login' ? <Login>로그인</Login> : null
+                pathname === '/login' ? <Login onClick={handleAuth}>로그인</Login> : null
             }
 
         </NavWrapper>
