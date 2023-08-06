@@ -1,7 +1,7 @@
 import './App.css'
 import {useEffect, useState} from "react";
 import axios from "axios";
-import PokeCard from "./components/PokeCard";
+import PokeCard from "./components/PokeCard.js";
 import {useDebounce} from "./hooks/useDebounce";
 
 function App() {

@@ -1,8 +1,8 @@
 import '../../App.css'
 import {useEffect, useState} from "react";
 import axios from "axios";
-import PokeCard from "../../components/PokeCard";
-import AutoComplete from "../../components/AutoComplete";
+import PokeCard from "../../components/PokeCard.tsx";
+import AutoComplete from "../../components/AutoComplete.tsx";
 import {PokemonData, PokemonNameAndUrl} from "../../types/PokemonData";
 
 function App() {
